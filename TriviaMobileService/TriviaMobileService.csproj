@@ -186,6 +186,7 @@
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\QuestionItemController.cs" />
+    <Compile Include="Controllers\triviaquestionsController.cs" />
     <Compile Include="DataObjects\QuestionItem.cs" />
     <Compile Include="Models\MobileServiceContext.cs" />
     <Compile Include="Global.asax.cs">

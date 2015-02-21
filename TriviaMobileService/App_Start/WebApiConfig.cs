@@ -34,7 +34,9 @@ namespace TriviaMobileService
             List<QuestionItem> questionItems = new List<QuestionItem>
             {
                 new QuestionItem { Id = Guid.NewGuid().ToString(), questionText = "Text", answerOne = "One", answerTwo = "Two",
-                                   answerThree = "Three", answerFour = "Four", identifier = 1}
+                                   answerThree = "Three", answerFour = "Four", identifier = 1},
+                new QuestionItem { Id = Guid.NewGuid().ToString(), questionText = "Text", answerOne = "One", answerTwo = "Two",
+                                   answerThree = "Three", answerFour = "Four", identifier = 2}
             };
 
             foreach (QuestionItem questionItem in questionItems)
