@@ -23,7 +23,22 @@ namespace TriviaMobileService.Controllers
         }
 
         // GET api/triviaquestions
-        public IQueryable<QuestionItem> Get()
+        [Route("api/triviaquestions")]
+        public IQueryable<QuestionToClient> Get()
+        {
+            return Query().Select(x => new QuestionToClient()
+            {
+                Id = x.Id,
+                questionText = x.questionText,
+                answerOne = x.answerOne,
+                answerTwo = x.answerTwo,
+                answerThree = x.answerThree,
+                answerFour = x.answerFour
+            });
+        }
+
+        [Route("api/triviaquestions")]
+        public IQueryable<QuestionItem> Post()
         {
             return Query();
         }
