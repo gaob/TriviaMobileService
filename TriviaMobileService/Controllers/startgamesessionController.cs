@@ -7,6 +7,7 @@ using System.Web.Http;
 using Microsoft.WindowsAzure.Mobile.Service;
 using TriviaMobileService.Models;
 using Newtonsoft.Json.Linq;
+using TriviaMobileService.DataObjects;
 
 namespace TriviaMobileService.Controllers
 {
@@ -27,6 +28,7 @@ namespace TriviaMobileService.Controllers
                     throw new Exception("key not found!");
                 }
 
+                playerid = payload.playerid;
                 var Ids = payload.triviaIds;
 
                 JArray JNotExist = new JArray();
@@ -65,7 +67,11 @@ namespace TriviaMobileService.Controllers
                     return Request.CreateResponse(HttpStatusCode.BadRequest, JNotExist);
                 }
 
-                return Request.CreateResponse(HttpStatusCode.BadRequest, new { message = "message" });
+                string new_id = Guid.NewGuid().ToString();
+                context.SessionItems.Add(new SessionItem { Id = new_id, playerid = playerid });
+                context.SaveChanges();
+
+                return Request.CreateResponse(HttpStatusCode.OK, new { playerid = playerid, gamesessionid = new_id});
             }
             catch (Exception ex)
             {
