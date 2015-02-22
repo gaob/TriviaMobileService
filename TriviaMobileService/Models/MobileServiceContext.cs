@@ -44,6 +44,8 @@ namespace TriviaMobileService.Models
         }
 
         public System.Data.Entity.DbSet<TriviaMobileService.DataObjects.SessionItem> SessionItems { get; set; }
+
+        public System.Data.Entity.DbSet<TriviaMobileService.DataObjects.SessionQuestionItem> SessionQuestionItems { get; set; }
     }
 
 }

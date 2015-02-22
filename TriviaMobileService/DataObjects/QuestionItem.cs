@@ -11,7 +11,7 @@ namespace TriviaMobileService.DataObjects
         public string answerThree { get; set; }
         public string answerFour { get; set; }
 
-        public int identifier { get; set; }
+        public string identifier { get; set; }
     }
 
     public class QuestionToClient
