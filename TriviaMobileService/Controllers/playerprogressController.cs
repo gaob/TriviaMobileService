@@ -48,6 +48,11 @@ namespace TriviaMobileService.Controllers
                     throw new Exception("SessionQuestion Error!");
                 }
 
+                if (SQtoUpdate.proposedAnswer != "?")
+                {
+                    throw new Exception("Question has been answered!");
+                }
+
                 //Save proposed answer.
                 SQtoUpdate.proposedAnswer = payload.proposedAnswer;
                 
