@@ -25,6 +25,11 @@ namespace TriviaMobileService.Controllers
                     throw new Exception("key not found!");
                 }
 
+                if (payload.proposedAnswer != "1" && payload.proposedAnswer != "2" && payload.proposedAnswer != "3" && payload.proposedAnswer != "4")
+                {
+                    throw new Exception("format error!");
+                }
+
                 string SessionID = payload.gamesessionid;
                 string PlayerID = payload.playerid;
                 string QuestionID = payload.id;
@@ -43,10 +48,21 @@ namespace TriviaMobileService.Controllers
                     throw new Exception("SessionQuestion Error!");
                 }
 
+                //Save proposed answer.
                 SQtoUpdate.proposedAnswer = payload.proposedAnswer;
-                context.SaveChanges();
+                
+                var question = context.QuestionItems.Find(QuestionID);
 
-                return Request.CreateResponse(HttpStatusCode.BadRequest, new { message = "Error" });
+                context.SaveChangesAsync();
+
+                if (question.identifier == SQtoUpdate.proposedAnswer)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, new { answerEvaluation = "correct" });
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, new { answerEvaluation = "incorrect" });
+                }
             }
             catch (Exception ex)
             {
