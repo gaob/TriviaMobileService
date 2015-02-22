@@ -185,6 +185,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\playerprogressController.cs" />
     <Compile Include="Controllers\QuestionItemController.cs" />
     <Compile Include="Controllers\SessionItemController.cs" />
     <Compile Include="Controllers\SessionQuestionItemController.cs" />

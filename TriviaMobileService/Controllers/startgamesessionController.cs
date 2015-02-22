@@ -19,8 +19,6 @@ namespace TriviaMobileService.Controllers
         [Route("api/startgamesession")]
         public HttpResponseMessage Post([FromBody]dynamic payload)
         {
-            string playerid = string.Empty;
-
             try
             {
                 if (payload.playerid == null || payload.triviaIds == null)
@@ -28,7 +26,7 @@ namespace TriviaMobileService.Controllers
                     throw new Exception("key not found!");
                 }
 
-                playerid = payload.playerid;
+                string playerid = payload.playerid;
                 var Ids = payload.triviaIds;
 
                 JArray JNotExist = new JArray();
