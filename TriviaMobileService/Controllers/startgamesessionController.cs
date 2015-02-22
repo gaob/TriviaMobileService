@@ -69,6 +69,11 @@ namespace TriviaMobileService.Controllers
 
                 string new_id = Guid.NewGuid().ToString();
                 context.SessionItems.Add(new SessionItem { Id = new_id, playerid = playerid });
+                foreach (var theID in theIDs)
+                {
+                    context.SessionQuestionItems.Add(new SessionQuestionItem { Id = Guid.NewGuid().ToString(), GameSessionID = new_id, QuestionID = theID, proposedAnswer = "?"});
+                }
+
                 context.SaveChanges();
 
                 return Request.CreateResponse(HttpStatusCode.OK, new { playerid = playerid, gamesessionid = new_id});
