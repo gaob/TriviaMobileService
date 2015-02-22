@@ -70,9 +70,32 @@ namespace TriviaMobileService.Controllers
         }
 
         [Route("api/triviaquestions")]
-        public IQueryable<QuestionItem> Post()
+        public HttpResponseMessage Post([FromBody]dynamic payload)
         {
-            return Query();
+            string playerid = string.Empty;
+
+            try
+            {
+                if (payload.playerid == null || payload.triviaIds == null)
+                {
+                    throw new Exception("key not found!");
+                }
+
+                var Ids = payload.triviaIds;
+
+                foreach (var item in Ids)
+                {
+                    string id = item.id;
+
+                    id = "id";
+                }
+
+                return Request.CreateResponse(HttpStatusCode.BadRequest, new { message = "message" });
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, new { message = ex.Message });
+            }
         }
     }
 }
