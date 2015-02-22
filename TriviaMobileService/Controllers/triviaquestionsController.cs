@@ -22,6 +22,23 @@ namespace TriviaMobileService.Controllers
             DomainManager = new EntityDomainManager<QuestionItem>(context, Request, Services);
         }
 
+        // GET tables/TodoItem/48D68C86-6EA6-4C25-AA33-223FC9A27959
+        [Route("api/triviaquestions/{id}")]
+        public SingleResult<QuestionToClient> GetTodoItem(string id)
+        {
+            var result = Lookup(id).Queryable.Select(x => new QuestionToClient()
+            {
+                Id = x.Id,
+                questionText = x.questionText,
+                answerOne = x.answerOne,
+                answerTwo = x.answerTwo,
+                answerThree = x.answerThree,
+                answerFour = x.answerFour
+            });
+
+            return SingleResult<QuestionToClient>.Create(result);
+        }
+
         // GET api/triviaquestions
         [Route("api/triviaquestions")]
         public IQueryable<QuestionToClient> Get()
@@ -50,52 +67,6 @@ namespace TriviaMobileService.Controllers
                 answerThree = x.answerThree,
                 answerFour = x.answerFour
             });
-        }
-
-        // GET tables/TodoItem/48D68C86-6EA6-4C25-AA33-223FC9A27959
-        [Route("api/triviaquestions/{id}")]
-        public SingleResult<QuestionToClient> GetTodoItem(string id)
-        {
-            var result = Lookup(id).Queryable.Select(x => new QuestionToClient()
-            {
-                Id = x.Id,
-                questionText = x.questionText,
-                answerOne = x.answerOne,
-                answerTwo = x.answerTwo,
-                answerThree = x.answerThree,
-                answerFour = x.answerFour
-            });
-
-            return SingleResult<QuestionToClient>.Create(result);
-        }
-
-        [Route("api/triviaquestions")]
-        public HttpResponseMessage Post([FromBody]dynamic payload)
-        {
-            string playerid = string.Empty;
-
-            try
-            {
-                if (payload.playerid == null || payload.triviaIds == null)
-                {
-                    throw new Exception("key not found!");
-                }
-
-                var Ids = payload.triviaIds;
-
-                foreach (var item in Ids)
-                {
-                    string id = item.id;
-
-                    id = "id";
-                }
-
-                return Request.CreateResponse(HttpStatusCode.BadRequest, new { message = "message" });
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, new { message = ex.Message });
-            }
         }
     }
 }
