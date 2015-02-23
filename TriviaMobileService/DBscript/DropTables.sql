@@ -59,6 +59,7 @@ DROP TABLE [dotnet2].[__MigrationHistory];
 DROP TABLE [dotnet2].[QuestionItems];
 DROP TABLE [dotnet2].[SessionItems];
 DROP TABLE [dotnet2].[SessionQuestionItems];
+DROP TABLE [dotnet2].[ScoreItems];
 
 GO
 IF @@ERROR <> 0
