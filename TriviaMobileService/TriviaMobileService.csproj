@@ -186,6 +186,7 @@
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\endgamesessionController.cs" />
+    <Compile Include="Controllers\highscoreController.cs" />
     <Compile Include="Controllers\playerprogressController.cs" />
     <Compile Include="Controllers\QuestionItemController.cs" />
     <Compile Include="Controllers\ScoreItemController.cs" />

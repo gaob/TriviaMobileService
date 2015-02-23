@@ -7,6 +7,7 @@ using System.Web.Http;
 using Microsoft.WindowsAzure.Mobile.Service;
 using TriviaMobileService.Models;
 using TriviaMobileService.DataObjects;
+using Newtonsoft.Json.Linq;
 
 namespace TriviaMobileService.Controllers
 {
@@ -14,6 +15,53 @@ namespace TriviaMobileService.Controllers
     {
         public ApiServices Services { get; set; }
         MobileServiceContext context = new MobileServiceContext();
+
+        [Route("api/playerprogress")]
+        public HttpResponseMessage Get(string playerid, string gamesessionid)
+        {
+            try
+            {
+                if (playerid == null || gamesessionid == null)
+                {
+                    throw new Exception("key not found!");
+                }
+
+                var sessionItem = context.SessionItems.Find(gamesessionid);
+
+                if (sessionItem == null || sessionItem.playerid != playerid)
+                {
+                    throw new Exception("PlayerSession Error!");
+                }
+
+                var questions = from sq in context.SessionQuestionItems
+                                join q in context.QuestionItems
+                                on sq.QuestionID equals q.Id
+                                where sq.GameSessionID == gamesessionid
+                                select new { q.Id, q.questionText, q.answerOne, q.answerTwo, q.answerThree, q.answerFour, sq.proposedAnswer };
+
+                JArray JQuestions = new JArray();
+
+                foreach (var question in questions)
+                {
+                    JQuestions.Add(JObject.FromObject(new
+                    {
+                        id = question.Id,
+                        questionText = question.questionText,
+                        answerOne = question.answerOne,
+                        answerTwo = question.answerTwo,
+                        answerThree = question.answerThree,
+                        answerFour = question.answerFour,
+                        proposedAnswer = question.proposedAnswer
+                    }));
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK, JQuestions);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, new { message = ex.Message });
+            }
+        }
 
         [Route("api/playerprogress")]
         public HttpResponseMessage Patch([FromBody]dynamic payload)
