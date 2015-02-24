@@ -8,6 +8,7 @@ using Microsoft.WindowsAzure.Mobile.Service;
 using TriviaMobileService.Models;
 using TriviaMobileService.DataObjects;
 using System.Web.Http.Controllers;
+using Newtonsoft.Json.Linq;
 
 namespace TriviaMobileService.Controllers
 {
@@ -56,17 +57,38 @@ namespace TriviaMobileService.Controllers
 
         // GET tables/TodoItem/48D68C86-6EA6-4C25-AA33-223FC9A27959
         [Route("api/triviaquestions/{triviaQCount:int}")]
-        public IQueryable<QuestionToClient> GetTodoItem(int triviaQCount)
+        public HttpResponseMessage GetTodoItem(int triviaQCount)
         {
-            return Query().OrderBy(c => Guid.NewGuid()).Take(triviaQCount).Select(x => new QuestionToClient()
+            try
             {
-                Id = x.Id,
-                questionText = x.questionText,
-                answerOne = x.answerOne,
-                answerTwo = x.answerTwo,
-                answerThree = x.answerThree,
-                answerFour = x.answerFour
-            });
+                if (triviaQCount <= 0 || triviaQCount > 30)
+                {
+                    throw new Exception("Invalid triviaQCount!");
+                }
+
+                JArray JQuestions = new JArray();
+
+                var questions = Query().OrderBy(c => Guid.NewGuid()).Take(triviaQCount);
+
+                foreach (var question in questions)
+                {
+                    JQuestions.Add(JObject.FromObject(new
+                    {
+                        id = question.Id,
+                        questionText = question.questionText,
+                        answerOne = question.answerOne,
+                        answerTwo = question.answerTwo,
+                        answerThree = question.answerThree,
+                        answerFour = question.answerFour
+                    }));
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK, JQuestions);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, new { message = ex.Message });
+            }
         }
     }
 }

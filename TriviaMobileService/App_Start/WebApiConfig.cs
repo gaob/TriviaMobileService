@@ -100,8 +100,6 @@ namespace TriviaMobileService
             foreach (QuestionItem questionItem in questionItems)
             {
                 context.Set<QuestionItem>().Add(questionItem);
-
-                if (++i > 2) break;
             }
 
             base.Seed(context);
