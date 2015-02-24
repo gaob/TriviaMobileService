@@ -8,6 +8,7 @@ using Microsoft.WindowsAzure.Mobile.Service;
 using TriviaMobileService.DataObjects;
 using System.Web.Http.Controllers;
 using TriviaMobileService.Models;
+using Newtonsoft.Json.Linq;
 
 namespace TriviaMobileService.Controllers
 {
@@ -21,9 +22,29 @@ namespace TriviaMobileService.Controllers
         }
 
         [Route("api/highscore")]
-        public IQueryable<ScoreItem> Get(string playerid)
+        public HttpResponseMessage Get(string playerid)
         {
-            return Query().Where(x => x.playerid == playerid);
+            try
+            {
+                JArray JScores = new JArray();
+
+                var highscores = Query().Where(x => x.playerid == playerid).OrderByDescending(x => x.score);
+
+                foreach (var highscore in highscores)
+                {
+                    JScores.Add(JObject.FromObject(new
+                    {
+                        score = highscore.score,
+                        occurred = highscore.occurred
+                    }));
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK, JScores);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, new { message = ex.Message });
+            }
         }
     }
 }
