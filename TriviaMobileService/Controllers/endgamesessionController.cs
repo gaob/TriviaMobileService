@@ -85,7 +85,7 @@ namespace TriviaMobileService.Controllers
                 else 
                 {
                     StoUpdate = context.ScoreItems.Where(p => p.playerid == PlayerID && p.score == score).FirstOrDefault();
-                    highscorebeat = context.ScoreItems.Where(p => p.score > score).Count() + 1;
+                    highscorebeat = context.ScoreItems.Where(p => p.playerid == PlayerID && p.score > score).Count() + 1;
                     
                     //Overwrite Date and Time to existing score
                     if (StoUpdate != null)
@@ -111,7 +111,7 @@ namespace TriviaMobileService.Controllers
                         else if (currCount == 10)
                         {
                             var StoDrops = from s in context.ScoreItems
-                                                where s.score < score
+                                                where s.playerid == PlayerID && s.score < score
                                                 select s;
 
                             if (StoDrops.Count() != 1)
@@ -131,7 +131,7 @@ namespace TriviaMobileService.Controllers
                     }
                 }
 
-                context.SaveChanges();
+                context.SaveChangesAsync();
 
                 return Request.CreateResponse(HttpStatusCode.OK, new { score = score, highscorebeat = highscorebeat });
             }
