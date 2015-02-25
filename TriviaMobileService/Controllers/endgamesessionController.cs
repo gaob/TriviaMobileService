@@ -125,11 +125,9 @@ namespace TriviaMobileService.Controllers
                         //When the current score count is 10.
                         else if (currCount == 10)
                         {
-                            var StoDrops = from s in context.ScoreItems
-                                                where s.playerid == PlayerID && s.score < score
-                                                select s;
+                            var StoDrops = context.ScoreItems.Where(x => x.playerid == PlayerID).OrderBy(x => x.score);
 
-                            if (StoDrops.Count() != 1)
+                            if (StoDrops.Count() == 0)
                             {
                                 throw new Exception("Invalid code path!");
                             }

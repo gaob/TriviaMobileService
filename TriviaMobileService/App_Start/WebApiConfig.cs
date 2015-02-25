@@ -95,8 +95,6 @@ namespace TriviaMobileService
                                    identifier = "1"}
             };
 
-            int i = 0;
-
             foreach (QuestionItem questionItem in questionItems)
             {
                 context.Set<QuestionItem>().Add(questionItem);
