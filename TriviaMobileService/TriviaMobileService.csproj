@@ -189,9 +189,6 @@
     <Compile Include="Controllers\highscoreController.cs" />
     <Compile Include="Controllers\playerprogressController.cs" />
     <Compile Include="Controllers\QuestionItemController.cs" />
-    <Compile Include="Controllers\ScoreItemController.cs" />
-    <Compile Include="Controllers\SessionItemController.cs" />
-    <Compile Include="Controllers\SessionQuestionItemController.cs" />
     <Compile Include="Controllers\startgamesessionController.cs" />
     <Compile Include="Controllers\triviaquestionsController.cs" />
     <Compile Include="DataObjects\QuestionItem.cs" />
