@@ -100,14 +100,14 @@ namespace TriviaMobileService.Controllers
                 else 
                 {
                     StoUpdate = context.ScoreItems.Where(p => p.playerid == PlayerID && p.score == score).FirstOrDefault();
-                    highscorebeat = context.ScoreItems.Where(p => p.playerid == PlayerID && p.score > score).Count() + 1;
+                    highscorebeat = context.ScoreItems.Where(p => p.playerid == PlayerID && p.score >= score).Count() + 1;
                     
                     //Overwrite Date and Time to existing score
                     if (StoUpdate != null)
                     {
                         StoUpdate.occurred = DateTime.Now;
                         //If is updating the last score
-                        if (currCount == highscorebeat) {
+                        if (currCount+1 == highscorebeat) {
                             highscorebeat = -1;
                         }
                     } 
