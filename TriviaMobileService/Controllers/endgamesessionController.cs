@@ -27,6 +27,7 @@ namespace TriviaMobileService.Controllers
 
                 string SessionID = payload.gamesessionid;
                 string PlayerID = payload.playerid;
+                bool SaveScore = true;
 
                 var sessionItem = context.SessionItems.Find(SessionID);
 
@@ -48,6 +49,13 @@ namespace TriviaMobileService.Controllers
 
                 foreach (var question in questions)
                 {
+                    //The player ends the game in the middle of the session
+                    if (question.proposedAnswer == "?")
+                    {
+                        SaveScore = false;
+                        break;
+                    }
+
                     if (question.proposedAnswer == question.identifier)
                     {
                         score++;
@@ -65,6 +73,13 @@ namespace TriviaMobileService.Controllers
                 foreach (var SQItem in SQItemToDrop)
                 {
                     context.SessionQuestionItems.Remove(SQItem);
+                }
+
+                if (!SaveScore)
+                {
+                    context.SaveChangesAsync();
+
+                    return Request.CreateResponse(HttpStatusCode.OK, new { score = "-1", highscorebeat = "-1" });
                 }
 
                 if (score < 0)
