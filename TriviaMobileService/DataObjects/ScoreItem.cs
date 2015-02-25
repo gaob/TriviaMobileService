@@ -6,6 +6,9 @@ using System.Web;
 
 namespace TriviaMobileService.DataObjects
 {
+    /// <summary>
+    /// The score structure stored in the database.
+    /// </summary>
     public class ScoreItem : EntityData
     {
         public string playerid { get; set; }

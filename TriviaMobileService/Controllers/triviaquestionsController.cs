@@ -9,6 +9,7 @@ using TriviaMobileService.Models;
 using TriviaMobileService.DataObjects;
 using System.Web.Http.Controllers;
 using Newtonsoft.Json.Linq;
+using Microsoft.WindowsAzure.Mobile.Service.Security;
 
 namespace TriviaMobileService.Controllers
 {
@@ -23,41 +24,55 @@ namespace TriviaMobileService.Controllers
             DomainManager = new EntityDomainManager<QuestionItem>(context, Request, Services);
         }
 
-        // GET tables/TodoItem/48D68C86-6EA6-4C25-AA33-223FC9A27959
+        /// <summary>
+        /// Return a trivia question by its ID.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [AuthorizeLevel(AuthorizationLevel.Application)]
         [Route("api/triviaquestions/{id}")]
-        public SingleResult<QuestionToClient> GetTodoItem(string id)
+        public SingleResult<QuestionToClient> GetQuestionItem(string id)
         {
             var result = Lookup(id).Queryable.Select(x => new QuestionToClient()
             {
                 Id = x.Id,
-                questionText = x.questionText,
-                answerOne = x.answerOne,
-                answerTwo = x.answerTwo,
-                answerThree = x.answerThree,
-                answerFour = x.answerFour
+                questionText = x.QuestionText,
+                answerOne = x.AnswerOne,
+                answerTwo = x.AnswerTwo,
+                answerThree = x.AnswerThree,
+                answerFour = x.AnswerFour
             });
 
             return SingleResult<QuestionToClient>.Create(result);
         }
 
-        // GET api/triviaquestions
+        /// <summary>
+        /// Return all questions.
+        /// </summary>
+        /// <returns></returns>
+        [AuthorizeLevel(AuthorizationLevel.Application)]
         [Route("api/triviaquestions")]
         public IQueryable<QuestionToClient> Get()
         {
             return Query().Select(x => new QuestionToClient()
             {
                 Id = x.Id,
-                questionText = x.questionText,
-                answerOne = x.answerOne,
-                answerTwo = x.answerTwo,
-                answerThree = x.answerThree,
-                answerFour = x.answerFour
+                questionText = x.QuestionText,
+                answerOne = x.AnswerOne,
+                answerTwo = x.AnswerTwo,
+                answerThree = x.AnswerThree,
+                answerFour = x.AnswerFour
             });
         }
 
-        // GET tables/TodoItem/48D68C86-6EA6-4C25-AA33-223FC9A27959
+        /// <summary>
+        /// Return random questions of triviaQCount.
+        /// </summary>
+        /// <param name="triviaQCount"></param>
+        /// <returns></returns>
+        [AuthorizeLevel(AuthorizationLevel.Application)]
         [Route("api/triviaquestions")]
-        public HttpResponseMessage GetTodoItem(int triviaQCount)
+        public HttpResponseMessage GetQuestionItem(int triviaQCount)
         {
             try
             {
@@ -68,6 +83,7 @@ namespace TriviaMobileService.Controllers
 
                 JArray JQuestions = new JArray();
 
+                // Use new Guid to randomize the questions.
                 var questions = Query().OrderBy(c => Guid.NewGuid()).Take(triviaQCount);
 
                 foreach (var question in questions)
@@ -75,11 +91,11 @@ namespace TriviaMobileService.Controllers
                     JQuestions.Add(JObject.FromObject(new
                     {
                         id = question.Id,
-                        questionText = question.questionText,
-                        answerOne = question.answerOne,
-                        answerTwo = question.answerTwo,
-                        answerThree = question.answerThree,
-                        answerFour = question.answerFour
+                        questionText = question.QuestionText,
+                        answerOne = question.AnswerOne,
+                        answerTwo = question.AnswerTwo,
+                        answerThree = question.AnswerThree,
+                        answerFour = question.AnswerFour
                     }));
                 }
 

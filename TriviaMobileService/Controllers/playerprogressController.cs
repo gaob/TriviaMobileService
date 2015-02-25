@@ -8,6 +8,7 @@ using Microsoft.WindowsAzure.Mobile.Service;
 using TriviaMobileService.Models;
 using TriviaMobileService.DataObjects;
 using Newtonsoft.Json.Linq;
+using Microsoft.WindowsAzure.Mobile.Service.Security;
 
 namespace TriviaMobileService.Controllers
 {
@@ -16,6 +17,13 @@ namespace TriviaMobileService.Controllers
         public ApiServices Services { get; set; }
         MobileServiceContext context = new MobileServiceContext();
 
+        /// <summary>
+        /// Retrieve all questions the player has in the current game.
+        /// </summary>
+        /// <param name="playerid"></param>
+        /// <param name="gamesessionid"></param>
+        /// <returns></returns>
+        [AuthorizeLevel(AuthorizationLevel.Application)]
         [Route("api/playerprogress")]
         public HttpResponseMessage Get(string playerid, string gamesessionid)
         {
@@ -26,6 +34,7 @@ namespace TriviaMobileService.Controllers
                     throw new Exception("key not found!");
                 }
 
+                // Check if Game session is valid.
                 var sessionItem = context.SessionItems.Find(gamesessionid);
 
                 if (sessionItem == null || sessionItem.playerid != playerid)
@@ -33,11 +42,12 @@ namespace TriviaMobileService.Controllers
                     throw new Exception("PlayerSession Error!");
                 }
 
+                // Get all questions in this session.
                 var questions = from sq in context.SessionQuestionItems
                                 join q in context.QuestionItems
                                 on sq.QuestionID equals q.Id
                                 where sq.GameSessionID == gamesessionid
-                                select new { q.Id, q.questionText, q.answerOne, q.answerTwo, q.answerThree, q.answerFour, sq.proposedAnswer };
+                                select new { q.Id, questionText = q.QuestionText, answerOne = q.AnswerOne, answerTwo = q.AnswerTwo, answerThree = q.AnswerThree, answerFour = q.AnswerFour, sq.proposedAnswer };
 
                 JArray JQuestions = new JArray();
 
@@ -63,6 +73,12 @@ namespace TriviaMobileService.Controllers
             }
         }
 
+        /// <summary>
+        /// Update a question with the results of the player's answer.
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        [AuthorizeLevel(AuthorizationLevel.Application)]
         [Route("api/playerprogress")]
         public HttpResponseMessage Patch([FromBody]dynamic payload)
         {
@@ -82,6 +98,7 @@ namespace TriviaMobileService.Controllers
                 string PlayerID = payload.playerid;
                 string QuestionID = payload.id;
 
+                // Check if game session is valid.
                 var sessionItem = context.SessionItems.Find(SessionID);
 
                 if (sessionItem == null || sessionItem.playerid != PlayerID)
@@ -89,6 +106,7 @@ namespace TriviaMobileService.Controllers
                     throw new Exception("PlayerSession Error!");
                 }
 
+                // Get this question by session and id.
                 SessionQuestionItem SQtoUpdate = context.SessionQuestionItems.Where(p => p.GameSessionID == SessionID && p.QuestionID == QuestionID).FirstOrDefault();
 
                 if (SQtoUpdate == null)
@@ -96,6 +114,7 @@ namespace TriviaMobileService.Controllers
                     throw new Exception("SessionQuestion Error!");
                 }
 
+                // Prevent update a question that has been answered.
                 if (SQtoUpdate.proposedAnswer != "?")
                 {
                     throw new Exception("Question has been answered!");
@@ -106,9 +125,10 @@ namespace TriviaMobileService.Controllers
                 
                 var question = context.QuestionItems.Find(QuestionID);
 
+                // Always put Save() right before returning.
                 context.SaveChangesAsync();
 
-                if (question.identifier == SQtoUpdate.proposedAnswer)
+                if (question.Identifier == SQtoUpdate.proposedAnswer)
                 {
                     return Request.CreateResponse(HttpStatusCode.OK, new { answerEvaluation = "correct" });
                 }

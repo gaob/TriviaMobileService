@@ -6,9 +6,13 @@ using System.Web.Http.OData;
 using Microsoft.WindowsAzure.Mobile.Service;
 using TriviaMobileService.DataObjects;
 using TriviaMobileService.Models;
+using Microsoft.WindowsAzure.Mobile.Service.Security;
 
 namespace TriviaMobileService.Controllers
 {
+    /// <summary>
+    /// Standard Table Controller to access QuestionItem table, all require master key.
+    /// </summary>
     public class QuestionItemController : TableController<QuestionItem>
     {
         protected override void Initialize(HttpControllerContext controllerContext)
@@ -18,33 +22,33 @@ namespace TriviaMobileService.Controllers
             DomainManager = new EntityDomainManager<QuestionItem>(context, Request, Services);
         }
 
-        // GET tables/TodoItem
-        public IQueryable<QuestionItem> GetAllTodoItems()
+        [AuthorizeLevel(AuthorizationLevel.Admin)]
+        public IQueryable<QuestionItem> GetAllQuestionItems()
         {
             return Query();
         }
 
-        // GET tables/TodoItem/48D68C86-6EA6-4C25-AA33-223FC9A27959
-        public SingleResult<QuestionItem> GetTodoItem(string id)
+        [AuthorizeLevel(AuthorizationLevel.Admin)]
+        public SingleResult<QuestionItem> GetQuestionItem(string id)
         {
             return Lookup(id);
         }
 
-        // PATCH tables/TodoItem/48D68C86-6EA6-4C25-AA33-223FC9A27959
-        public Task<QuestionItem> PatchTodoItem(string id, Delta<QuestionItem> patch)
+        [AuthorizeLevel(AuthorizationLevel.Admin)]
+        public Task<QuestionItem> PatchQuestionItem(string id, Delta<QuestionItem> patch)
         {
             return UpdateAsync(id, patch);
         }
 
-        // POST tables/TodoItem
-        public async Task<IHttpActionResult> PostTodoItem(QuestionItem item)
+        [AuthorizeLevel(AuthorizationLevel.Admin)]
+        public async Task<IHttpActionResult> PostQuestionItem(QuestionItem item)
         {
             QuestionItem current = await InsertAsync(item);
             return CreatedAtRoute("Tables", new { id = current.Id }, current);
         }
 
-        // DELETE tables/TodoItem/48D68C86-6EA6-4C25-AA33-223FC9A27959
-        public Task DeleteTodoItem(string id)
+        [AuthorizeLevel(AuthorizationLevel.Admin)]
+        public Task DeleteQuestionItem(string id)
         {
             return DeleteAsync(id);
         }

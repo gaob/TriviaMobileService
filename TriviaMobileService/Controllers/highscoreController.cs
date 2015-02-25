@@ -9,6 +9,7 @@ using TriviaMobileService.DataObjects;
 using System.Web.Http.Controllers;
 using TriviaMobileService.Models;
 using Newtonsoft.Json.Linq;
+using Microsoft.WindowsAzure.Mobile.Service.Security;
 
 namespace TriviaMobileService.Controllers
 {
@@ -21,6 +22,12 @@ namespace TriviaMobileService.Controllers
             DomainManager = new EntityDomainManager<ScoreItem>(context, Request, Services);
         }
 
+        /// <summary>
+        /// Retrieve a player's high scores.
+        /// </summary>
+        /// <param name="playerid"></param>
+        /// <returns></returns>
+        [AuthorizeLevel(AuthorizationLevel.Application)]
         [Route("api/highscore")]
         public HttpResponseMessage Get(string playerid)
         {
@@ -28,6 +35,7 @@ namespace TriviaMobileService.Controllers
             {
                 JArray JScores = new JArray();
 
+                // Get all high scores by this player in descending order.
                 var highscores = Query().Where(x => x.playerid == playerid).OrderByDescending(x => x.score);
 
                 foreach (var highscore in highscores)

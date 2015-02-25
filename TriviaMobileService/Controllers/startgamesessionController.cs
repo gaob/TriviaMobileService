@@ -8,6 +8,7 @@ using Microsoft.WindowsAzure.Mobile.Service;
 using TriviaMobileService.Models;
 using Newtonsoft.Json.Linq;
 using TriviaMobileService.DataObjects;
+using Microsoft.WindowsAzure.Mobile.Service.Security;
 
 namespace TriviaMobileService.Controllers
 {
@@ -16,6 +17,12 @@ namespace TriviaMobileService.Controllers
         public ApiServices Services { get; set; }
         MobileServiceContext context = new MobileServiceContext();
 
+        /// <summary>
+        /// Start a game session.
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        [AuthorizeLevel(AuthorizationLevel.Application)]
         [Route("api/startgamesession")]
         public HttpResponseMessage Post([FromBody]dynamic payload)
         {
@@ -29,12 +36,14 @@ namespace TriviaMobileService.Controllers
                 string playerid = payload.playerid;
                 var Ids = payload.triviaIds;
 
+                // JArray to hold bad ids.
                 JArray JNotExist = new JArray();
 
                 List<string> theIDs = new List<string>();
                 string temp_id;
                 JToken temp_token = null;
 
+                // Check if IDs are valid.
                 foreach (var item in Ids)
                 {
                     temp_id = item.id;
@@ -47,6 +56,7 @@ namespace TriviaMobileService.Controllers
 
                     var result = context.QuestionItems.Find(temp_id);
 
+                    // If such question doesn't exist, add the bad list.
                     if (result == null)
                     {
                         temp_token = JObject.FromObject(new { id = temp_id });
@@ -65,14 +75,16 @@ namespace TriviaMobileService.Controllers
                     return Request.CreateResponse(HttpStatusCode.BadRequest, JNotExist);
                 }
 
+                // Create a new game session.
                 string new_id = Guid.NewGuid().ToString();
                 context.SessionItems.Add(new SessionItem { Id = new_id, playerid = playerid });
+                // Add all SessionQuestion items.
                 foreach (var theID in theIDs)
                 {
                     context.SessionQuestionItems.Add(new SessionQuestionItem { Id = Guid.NewGuid().ToString(), GameSessionID = new_id, QuestionID = theID, proposedAnswer = "?"});
                 }
 
-                context.SaveChanges();
+                context.SaveChangesAsync();
 
                 return Request.CreateResponse(HttpStatusCode.OK, new { playerid = playerid, gamesessionid = new_id});
             }
